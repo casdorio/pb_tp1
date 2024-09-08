@@ -6,37 +6,60 @@ import org.springframework.web.bind.annotation.*;
 import com.carlos.adriano.infnet.pb_tp1.model.Product;
 import com.carlos.adriano.infnet.pb_tp1.service.ProductService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.*;
 
 @RestController
 @RequestMapping("/api/public")
+@Tag(name = "Product API", description = "API para gerenciar produtos")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
     @PostMapping("/product")
-    public Product create(@RequestBody Product product) {
+    @Operation(summary = "Criar um novo produto", description = "Cria um novo produto e retorna o produto criado")
+    @ApiResponse(responseCode = "201", description = "Produto criado com sucesso")
+    @ApiResponse(responseCode = "400", description = "Solicitação inválida")
+    public Product create(@RequestBody @Parameter(description = "Produto a ser criado") Product product) {
         return productService.create(product);
     }
 
     @GetMapping("/product")
+    @Operation(summary = "Listar todos os produtos", description = "Retorna uma lista de todos os produtos")
+    @ApiResponse(responseCode = "200", description = "Lista de produtos")
     public List<Product> findAll() {
         return productService.findAll();
     }
 
     @GetMapping("/product/{id}")
-    public Optional<Product> findById(@PathVariable Long id) {
+    @Operation(summary = "Encontrar um produto por ID", description = "Retorna o produto com o ID fornecido")
+    @ApiResponse(responseCode = "200", description = "Produto encontrado")
+    @ApiResponse(responseCode = "404", description = "Produto não encontrado")
+    public Optional<Product> findById(@PathVariable @Parameter(description = "ID do produto") Long id) {
         return productService.findById(id);
     }
 
     @DeleteMapping("/product/{id}")
-    public void delete(@PathVariable Long id) {
+    @Operation(summary = "Excluir um produto por ID", description = "Exclui o produto com o ID fornecido")
+    @ApiResponse(responseCode = "204", description = "Produto excluído com sucesso")
+    @ApiResponse(responseCode = "404", description = "Produto não encontrado")
+    public void delete(@PathVariable @Parameter(description = "ID do produto") Long id) {
         productService.delete(id);
     }
 
     @PutMapping("/product/{id}")
-    public Product update(@PathVariable Long id, @RequestBody Product product) {
+    @Operation(summary = "Atualizar um produto", description = "Atualiza o produto com o ID fornecido e retorna o produto atualizado")
+    @ApiResponse(responseCode = "200", description = "Produto atualizado com sucesso")
+    @ApiResponse(responseCode = "400", description = "Solicitação inválida")
+    @ApiResponse(responseCode = "404", description = "Produto não encontrado")
+    public Product update(
+        @PathVariable @Parameter(description = "ID do produto") Long id, 
+        @RequestBody @Parameter(description = "Produto com as informações atualizadas") Product product) {
         return productService.update(id, product);
     }
 }
